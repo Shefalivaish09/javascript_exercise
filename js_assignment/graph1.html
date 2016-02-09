@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Graphs</title>
+  <!-- bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <!-- custom CSS -->
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body onload = "myFunction('#div1','outputfile/foodgrainVsProduction.json','#0048b3');
+myFunction('#div2','outputfile/oilseedVsProduction.json','#660066');
+myFunction('#div3','outputfile/commCropAggrValueVsYear.json','#0099cc');
+stackBar('#div4','outputfile/riceProductionStateValueVsYear.json');" >
+<div class="container">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand  -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse" aria-expanded="false">
+          <!-- <span class="sr-only">Toggle navigation</span> -->
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Agricultural Production</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse navbar-responsive-collapse" >
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="#div1">Oilseeds</a></li>
+          <li><a href="#div2">Foodgrains</a></li>
+          <li><a href="#div3">Commercial Crops</a></li>
+          <li><a href="#div4">Rice Production</a></li>
+        </ul>
+      </div>
+    </div><!-- /.container-fluid -->
+  </nav>
+
+
+    <div class="row">
+   	<div id = "div1" class="col-sm-12">
+   	  <h2>Oilseeds vs Production for 2013</h2>
+   	</div>
+    </div>
+    <div class="row">
+   	<div id = "div2" class="col-sm-12" >
+   	  <h2>Foodgrains vs Production for 2013</h2>
+   	</div>
+    </div>
+    <div class="row">
+    <div id = "div3" class="col-sm-12" >
+     <h2>Aggregated Commercial Crops Production vs Year</h2>
+    </div>
+    </div>
+    <div class="row">
+    <div id = "div4" class="col-sm-12">
+      <h2>Rice Production for Southern States of India</h2>
+    </div>
+    </div>
+</div>
+  <!-- d3.js -->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+  <!-- custom d3 script -->
+  <script src="js/codebar.js">
+  </script>
+
+</body>

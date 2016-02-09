@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+  <!-- custom CSS -->
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body onload = "myFunction('#div1','outputfile/foodgrainVsProduction.json','#0048b3');
+myFunction('#div2','outputfile/oilseedVsProduction.json','#660066');
+myFunction('#div3','outputfile/commCropAggrValueVsYear.json','#0099cc');
+stackBar('#div4','outputfile/riceProductionStateValueVsYear.json');" >
+ 	<div id = "div1" ></div>
+ 	<div id = "div2" ></div>
+  <div id = "div3" ></div>
+  <div id = "div4" ></div>
+
+  <!-- d3.js -->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+  <!-- custom d3 script -->
+  <script src="js/codebar.js">
+  </script>
+
+</body>
