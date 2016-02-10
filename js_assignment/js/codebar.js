@@ -64,7 +64,7 @@ function myFunction (el,json_file,graph_color){
 									.attr("y", 6)
 									.attr("dy", ".71em")
 									.style("text-anchor", "end")
-									.text("Production");
+									.text("Production(Ton mn)");
 
 
 
@@ -162,7 +162,7 @@ function myFunction (el,json_file,graph_color){
 			      .attr("y", 6)
 			      .attr("dy", ".71em")
 			      .style("text-anchor", "end")
-			      .text("Production");
+			      .text("Production(kg/ha)");
 
 			  var year = svg.selectAll(".year")
 			      .data(data)

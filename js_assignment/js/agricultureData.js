@@ -154,7 +154,6 @@ var riceProduction=(function(){
         var year = headers[y];
         var value =0;
         var riceProdData={};
-        riceProdData["year"]=headers[y];
         for (var k=0;k<dataLength-2;k++) {
           if((result[k].Particulars.indexOf("Rice Yield"))>-1)
               {
@@ -163,17 +162,27 @@ var riceProduction=(function(){
                   if(result[k].Particulars.indexOf(lookUp[0].southern_state[i])>-1)
                   {
                     var rowObj = result[k];
-                    if(rowObj[year] === "NA")
+                    if(rowObj[year] !== "NA")
                     {
-                      rowObj[year]=0;
-                    }
+                    riceProdData["year"]=headers[y];
                     value = parseFloat(rowObj[year]);
                     riceProdData[lookUp[0].southern_state[i]]=value;
+                   }
                   }
                 }
               }
             }
-          riceProd.push(riceProdData);
+      // to filter out the empty object
+      var isNotEmpty =  function (riceProdData) {
+              for(var key in riceProdData) {
+                if(riceProdData.hasOwnProperty(key)){
+                  riceProd.push(riceProdData);
+                }
+              }
+          };
+
+      isNotEmpty(riceProdData);
+
       }
 
       //return json stringify data
