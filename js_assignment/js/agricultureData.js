@@ -21,17 +21,18 @@ fs.readFile(inputFile,"utf-8",function(err,data){
   var lines=data.split("\n");
       dataLength= lines.length;
       headers=lines[0].split(",");
+
   for(var i=1;i<dataLength-1;i++){
-  var obj = {};
-  var currentline=splitCSV(lines[i]);//.split(",");
-  for(var j=0;j<headers.length;j++){
-        if(headers[j].substr(0,3)===" 3-")
-        {
-          headers[j]="yr_"+headers[j].substr(3,4);
-        }
-		     obj[headers[j]] = currentline[j];
-   }
-  result.push(obj);
+    var obj = {};
+    var currentline=splitCSV(lines[i]);//.split(",");
+    for(var j=0;j<headers.length;j++){
+          if(headers[j].substr(0,3)===" 3-")
+          {
+            headers[j]="yr_"+headers[j].substr(3,4);
+          }
+  		     obj[headers[j]] = currentline[j];
+     }
+    result.push(obj);
   }
 
 //call function for first requirement
@@ -60,23 +61,23 @@ function splitCSV(text){
 
 //filter the data based on the first requirement
 var oilseedVsProduction=(function(){
-               var oilseed_crop =[];
-              for(var k=0;k < dataLength-2 ;k++){
-              var index= result[k].Particulars.indexOf("Agricultural Production Oilseeds");
-              if(index > -1 && (result[k].yr_2013 !=="NA"))
-                  {
-                   if((result[k].Particulars.indexOf("Kharif"))>-1 || (result[k].Particulars.indexOf("Rabi"))>-1)
-                   {
-                     if((result[k].Particulars.replace("Agricultural Production Oilseeds ","")!=="Kharif") && (result[k].Particulars.replace("Agricultural Production Oilseeds ","")!=="Rabi"))
-                     {
-                        var oilseed = {};
-                        oilseed.x = result[k].Particulars.replace("Agricultural Production Oilseeds ","");
-                        oilseed.y =parseFloat(result[k].yr_2013);
-                        oilseed_crop.push(oilseed);
-                     }
-                   }
-                  }
-              }
+    var oilseed_crop =[];
+    for(var k=0;k < dataLength-2 ;k++){
+    var index= result[k].Particulars.indexOf("Agricultural Production Oilseeds");
+    if(index > -1 && (result[k].yr_2013 !=="NA"))
+        {
+         if((result[k].Particulars.indexOf("Kharif"))>-1 || (result[k].Particulars.indexOf("Rabi"))>-1)
+         {
+           if((result[k].Particulars.replace("Agricultural Production Oilseeds ","")!=="Kharif") && (result[k].Particulars.replace("Agricultural Production Oilseeds ","")!=="Rabi"))
+           {
+              var oilseed = {};
+              oilseed.x = result[k].Particulars.replace("Agricultural Production Oilseeds ","");
+              oilseed.y =parseFloat(result[k].yr_2013);
+              oilseed_crop.push(oilseed);
+           }
+         }
+        }
+    }
 
               //sorting data in descending order
               oilseed_crop.sort(function(a, b) { return b.y - a.y; });
