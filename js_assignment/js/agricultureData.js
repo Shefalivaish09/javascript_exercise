@@ -21,36 +21,21 @@ fs.readFile(inputFile,"utf-8",function(err,data){
   var lines=data.split("\n");
       dataLength= lines.length;
       headers=lines[0].split(",");
-
   for(var i=1;i<dataLength-1;i++){
-    var obj = {};
-    var currentline=splitCSV(lines[i]);//.split(",");
-    for(var j=0;j<headers.length;j++){
-          if(headers[j].substr(0,3)===" 3-")
-          {
-            headers[j]="yr_"+headers[j].substr(3,4);
-          }
-  		     obj[headers[j]] = currentline[j];
-     }
-    result.push(obj);
+  var obj = {};
+  var currentline=splitCSV(lines[i]);//.split(",");
+  for(var j=0;j<headers.length;j++){
+        if(headers[j].substr(0,3)===" 3-")
+        {
+          headers[j]="yr_"+headers[j].substr(3,4);
+        }
+		     obj[headers[j]] = currentline[j];
+   }
+  result.push(obj);
   }
 
 //call function for first requirement
- var resultOilseed=oilseedVsProduction();
- dataToJson('outputfile/oilseedVsProduction.json',resultOilseed);
-
-//call function for second requirement
-var resultFoodgrain=foodgrainVsProduction();;
-dataToJson('outputfile/foodgrainVsProduction.json',resultFoodgrain);
-
-//call function for third requirement
- var resultCropAggr=commCropAggrValueVsYear();
- dataToJson('outputfile/commCropAggrValueVsYear.json',resultCropAggr);
-
- //call function for fourth requirement
-var resultRiceProd = riceProduction();
-dataToJson('outputfile/riceProductionStateValueVsYear.json',resultRiceProd);
-
+dataMunging();
 });
 
 //function to split data in csv file
@@ -59,136 +44,126 @@ function splitCSV(text){
   return repl.trim().split(",");
 };
 
-//filter the data based on the first requirement
-var oilseedVsProduction=(function(){
-    var oilseed_crop =[];
-    for(var k=0;k < dataLength-2 ;k++){
-    var index= result[k].Particulars.indexOf("Agricultural Production Oilseeds");
-    if(index > -1 && (result[k].yr_2013 !=="NA"))
-        {
-         if((result[k].Particulars.indexOf("Kharif"))>-1 || (result[k].Particulars.indexOf("Rabi"))>-1)
-         {
-           if((result[k].Particulars.replace("Agricultural Production Oilseeds ","")!=="Kharif") && (result[k].Particulars.replace("Agricultural Production Oilseeds ","")!=="Rabi"))
-           {
-              var oilseed = {};
-              oilseed.x = result[k].Particulars.replace("Agricultural Production Oilseeds ","");
-              oilseed.y =parseFloat(result[k].yr_2013);
-              oilseed_crop.push(oilseed);
-           }
-         }
-        }
-    }
+var dataMunging=function(){
+   var oilseed_crop =[];
+   var foodgrain_crop =[];
+   var aggrComm =[];
+   var oilseedFilter1="Agricultural Production Oilseeds ";
+   var oilseedFilterYear="yr_2013";
+   var foodgrainFilter1="Agricultural Production Foodgrains ";
+   var foodgrainFilterYear="yr_2013";
+   var commercialCropFilter1 ="Commercial";
+   var lookUp =[];
+   var southern ={southern_state:['Karnataka','Andhra Pradesh','Tamil Nadu','Kerala','Telangana']};
+   lookUp.push(southern);
+   var riceProd=[];
+   var riceProdFilter1="Agricultural Production Foodgrains Rice Yield";
 
-              //sorting data in descending order
-              oilseed_crop.sort(function(a, b) { return b.y - a.y; });
-
-              //return json stringify data
-              return JSON.stringify(oilseed_crop);
-      });
-
-//filter the data based on the second requirement
-var foodgrainVsProduction=(function(){
-          var foodgrain_crop =[];
-          for(var k=0;k < dataLength-2 ;k++){
-          var index= result[k].Particulars.indexOf("Agricultural Production Foodgrains");
-          if(index>-1 && (result[k].yr_2013 !=="NA"))
+   for(var y=3;y<headers.length;y++){
+       var flagRice=false;
+       var flagCommercial = false;
+       var sum =0;
+       var year = headers[y];
+       var value =0;
+       var riceProdData={};
+       for (var k=0;k<dataLength-2;k++){
+        if((result[k].Particulars.indexOf(riceProdFilter1))>-1)
+          {
+            for(var i=0;i<lookUp[0].southern_state.length;i++)
+            {
+              if(result[k].Particulars.indexOf(lookUp[0].southern_state[i])>-1)
               {
-               if(
-                 (result[k].Particulars.indexOf("Area"))===-1 && (result[k].Particulars.indexOf("Volume"))===-1 && (result[k].Particulars.indexOf("Yield"))===-1 )
-               {
-                 if((result[k].Particulars.indexOf("Kharif"))>-1 || (result[k].Particulars.indexOf("Rabi"))>-1)
-                 {
-                 if((result[k].Particulars.replace("Agricultural Production Foodgrains ","")!=="Kharif") && (result[k].Particulars.replace("Agricultural Production Foodgrains ","")!=="Rabi") && (result[k].Particulars.replace("Agricultural Production Foodgrains ","")!=="Production Foodgrains Coarse Cereals Rice Kharif"))
-                 {
-                    var foodgrain = {};
-                    foodgrain.x = result[k].Particulars.replace("Agricultural Production Foodgrains ","");
-                    foodgrain.y =parseFloat(result[k].yr_2013);
-                    foodgrain_crop.push(foodgrain);
-                 }
+                var rowObj = result[k];
+                if(rowObj[year] !== "NA")
+                {
+                riceProdData["year"]=headers[y];
+                value = parseFloat(rowObj[year]);
+                riceProdData[lookUp[0].southern_state[i]]=value;
                }
               }
             }
           }
-
-          //sorting data in descending order
-          foodgrain_crop.sort(function(a, b) { return b.y - a.y; });
-
-          //return json stringify data
-          return JSON.stringify(foodgrain_crop);
-  });
-
-//filter the data based on the third requirement
-var commCropAggrValueVsYear=(function(){
-              var aggrComm =[];
-              for(var y=3;y<headers.length;y++){
-              var sum =0;
-              var year = headers[y];
-              for (var k=0;k<dataLength-2;k++){
-                var index =result[k].Particulars.indexOf("Commercial");
-                if(index>-1)
-                {
-                  var rowObj = result[k];
-                  if(rowObj[year] === "NA")
-                  {
-                    rowObj[year]=0;
-                  }
-                  sum = sum + parseFloat(rowObj[year]);
-                }
+         else if((result[k].Particulars.indexOf(commercialCropFilter1))>-1)
+           {
+             var rowObj = result[k];
+             if(rowObj[year] === "NA")
+             {
+               rowObj[year]=0;
              }
-             var aggrComm_data ={};
-              aggrComm_data.x=headers[y];
-              aggrComm_data.y=sum;
-              aggrComm.push(aggrComm_data);
-            }
-
-            //return json stringify data
-            return JSON.stringify(aggrComm);
-  });
-
-//filter the data based on the fourth requirement
-var riceProduction=(function(){
-      var lookUp =[];
-      var southern ={southern_state:['Karnataka','Andhra Pradesh','Tamil Nadu','Kerala','Telangana']};
-      lookUp.push(southern);
-      var riceProd=[];
-      for(var y=3;y<headers.length;y++){
-        var year = headers[y];
-        var value =0;
-        var riceProdData={};
-        for (var k=0;k<dataLength-2;k++) {
-          if((result[k].Particulars.indexOf("Rice Yield"))>-1)
-              {
-                for(var i=0;i<lookUp[0].southern_state.length;i++)
-                {
-                  if(result[k].Particulars.indexOf(lookUp[0].southern_state[i])>-1)
+             sum = sum + parseFloat(rowObj[year]);
+             flagCommercial=true;
+           }
+         else if( (headers[y].indexOf(oilseedFilterYear))>-1 && (result[k].Particulars.indexOf(oilseedFilter1))>-1 && (result[k].yr_2013 !=="NA"))
+          {
+           if((result[k].Particulars.indexOf("Kharif"))>-1 || (result[k].Particulars.indexOf("Rabi"))>-1)
+           {
+             if((result[k].Particulars.replace(oilseedFilter1,"")!=="Kharif") && (result[k].Particulars.replace(oilseedFilter1,"")!=="Rabi"))
+             {
+                var oilseed = {};
+                oilseed.x = result[k].Particulars.replace(oilseedFilter1,"");
+                oilseed.y =parseFloat(result[k].yr_2013);
+                oilseed_crop.push(oilseed);
+             }
+           }
+          }
+         else if ((headers[y].indexOf(foodgrainFilterYear))>-1 && (result[k].Particulars.indexOf(foodgrainFilter1))>-1 && (result[k].yr_2013 !=="NA"))
+          {
+            if((result[k].Particulars.indexOf("Area"))===-1 && (result[k].Particulars.indexOf("Volume"))===-1 && (result[k].Particulars.indexOf("Yield"))===-1 )
+               {
+                 if((result[k].Particulars.indexOf("Kharif"))>-1 || (result[k].Particulars.indexOf("Rabi"))>-1)
+                 {
+                 if((result[k].Particulars.replace(foodgrainFilter1,"")!=="Kharif") && (result[k].Particulars.replace(foodgrainFilter1,"")!=="Rabi") && (result[k].Particulars.replace(foodgrainFilter1,"")!=="Production Foodgrains Coarse Cereals Rice Kharif"))
                   {
-                    var rowObj = result[k];
-                    if(rowObj[year] !== "NA")
-                    {
-                    riceProdData["year"]=headers[y];
-                    value = parseFloat(rowObj[year]);
-                    riceProdData[lookUp[0].southern_state[i]]=value;
-                   }
+                    var foodgrain = {};
+                    foodgrain.x = result[k].Particulars.replace(foodgrainFilter1,"");
+                    foodgrain.y =parseFloat(result[k].yr_2013);
+                    foodgrain_crop.push(foodgrain);
                   }
-                }
+                 }
               }
-            }
-      // to filter out the empty object
-      var isNotEmpty =  function (riceProdData) {
-              for(var key in riceProdData) {
-                if(riceProdData.hasOwnProperty(key)){
-                  riceProd.push(riceProdData);
-                }
-              }
-          };
+         }
+       }
+     if(flagCommercial===true)
+     {
+       var aggrComm_data ={};
+       aggrComm_data.x=headers[y];
+       aggrComm_data.y=sum;
+       aggrComm.push(aggrComm_data);
+     }
+     var isNotEmpty =  function (riceProdData) {
+     for(var key in riceProdData)
+        {
+           if(riceProdData.hasOwnProperty(key))
+           {
+               flagRice = true;
+           }
+        }
+        if (flagRice===true)
+        {
+            riceProd.push(riceProdData);
+        }
+     };
 
-      isNotEmpty(riceProdData);
+     isNotEmpty(riceProdData);
+   }
+  //sorting data in descending order
+  oilseed_crop.sort(function(a, b) { return b.y - a.y; });
 
-      }
+  foodgrain_crop.sort(function(a, b) { return b.y - a.y; });
 
-      //return json stringify data
-      return JSON.stringify(riceProd);
-});
+  //write to file
+  var resultOilseed=  JSON.stringify(oilseed_crop);
+  dataToJson('outputfile/oilseedVsProduction.json',resultOilseed);
+
+  var resultFoodgrain=  JSON.stringify(foodgrain_crop);
+  dataToJson('outputfile/foodgrainVsProduction.json',resultFoodgrain);
+
+  var resultCropAggr=  JSON.stringify(aggrComm);
+  dataToJson('outputfile/commCropAggrValueVsYear.json',resultCropAggr);
+
+  var resultRiceProd=  JSON.stringify(riceProd);
+  dataToJson('outputfile/riceProductionStateValueVsYear.json',resultRiceProd);
+};
 
 //code to convert data into json format
 var dataToJson = function(file_name,file_data){
