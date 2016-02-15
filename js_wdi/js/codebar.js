@@ -241,21 +241,11 @@ function multiLine(el,json_file){
 		    d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
 		    d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
 		  ]);
-//
-			var tip = d3.tip()
-						.attr('class', 'd3-tip')
-						.offset([-10, 0])
-						.html(function(d) {
-							return "<strong>Values(US$):</strong> <span style='color:red'>" + d.temperature + "</span>";
-						});
 
 		  svg.append("g")
 		      .attr("class", "x axis")
 		      .attr("transform", "translate(0," + height + ")")
 		      .call(xAxis);
-
-//
-svg.call(tip);
 
 		  svg.append("g")
 		      .attr("class", "y axis")
@@ -275,9 +265,7 @@ svg.call(tip);
 		  city.append("path")
 		      .attr("class", "line")
 		      .attr("d", function(d) { return line(d.values); })
-		      .style("stroke", function(d) { return color(d.name); })
-					.on('mouseover', tip.show)
-					.on('mouseout', tip.hide);
+		      .style("stroke", function(d) { return color(d.name); });
 
 			var legend = svg.selectAll(".legend")
 		      .data(color.domain().slice().reverse())
