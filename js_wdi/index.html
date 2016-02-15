@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Graphs</title>
+  <!-- bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <!-- custom CSS -->
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<!-- myFunction('#div3','outputfile/commCropAggrValueVsYear.json','#0099cc');
+stackBar('#div4','outputfile/riceProductionStateValueVsYear.json'); -->
+<body onload = "stackBar('#div1','outputfile/gdpVsGni.json');
+stackBar('#div2','outputfile/gdpPerCapitaVsGniPercapita.json');
+lineChart('#div3','outputfile/indiaGDP.json');
+multiLine('#div4','outputfile/aggregatedGDP.json')" >
+<div class="container">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <!-- Brand  -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse" aria-expanded="false">
+          <!-- <span class="sr-only">Toggle navigation</span> -->
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">World Development Indicators</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse navbar-responsive-collapse" >
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="#div1">GDP at Market Price</a></li>
+          <li><a href="#div2">GDP per capita</a></li>
+          <li><a href="#div3">GDP growth for India</a></li>
+          <li><a href="#div4">Aggregated GDP</a></li>
+        </ul>
+      </div>
+    </div><!-- /.container-fluid -->
+  </nav>
+
+
+   <div class="row">
+   	<div id = "div1" class="col-sm-12">
+   	  <h2>Top 15 countries by GDP at Market Price (constant 2005 US$), for the year 2005</h2>
+   	</div>
+    </div>
+    <div class="row">
+   	<div id = "div2" class="col-sm-12" >
+   	  <h2>Top 15 countries by GDP per capita (constant 2005 US$), for the year 2005</h2>
+   	</div>
+    </div>
+    <div class="row">
+    <div id = "div3" class="col-sm-12" >
+     <h2>GDP growth for India over the given time period</h2>
+    </div>
+    </div>
+    <div class="row">
+    <div id = "div4" class="col-sm-12">
+      <h2>Aggregated "GDP per capita (constant 2005 US$)" by continent, over the time period 1960-2015</h2>
+    </div>
+    </div>
+</div>
+  <!--  The online version of jQuery-->
+  <script src="http://code.jquery.com/jquery.js"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <!-- d3.js -->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+  <!-- custom d3 script -->
+  <script src="js/codebar.js">
+  </script>
+
+</body>
