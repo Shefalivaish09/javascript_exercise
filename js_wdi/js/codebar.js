@@ -1,5 +1,5 @@
 //js for line chart
-function lineChart (el,json_file){
+function lineChart (el,json_file,subObject){
 	var margin = {top: 20, right: 20, bottom:80, left: 50},
 			width = 900 - margin.left - margin.right,
 			height = 500 - margin.top - margin.bottom;
@@ -21,10 +21,16 @@ function lineChart (el,json_file){
 			.scale(y)
 			.orient("left");
 
-	var line = d3.svg.line()
+	var valueline = d3.svg.line()
 			.interpolate("cardinal")
 			.x(function(d) { return x(d.x); })
 			.y(function(d) { return y(d.y); });
+
+	// Define 'div' for tooltips
+	var div = d3.select("body")
+	    .append("div")  // declare the tooltip div
+	    .attr("class", "tooltip")
+	    .style("opacity", 0);
 
 	var svg = d3.select(el).append("svg")
 			.attr("width", width + margin.left + margin.right)
@@ -33,6 +39,7 @@ function lineChart (el,json_file){
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	d3.json(json_file, function(error, data) {
+		data=data[subObject];
 		if (error) throw error;
 		data.forEach(function(d) {
 			d.x = d.x;//for x axis data
@@ -40,6 +47,34 @@ function lineChart (el,json_file){
 		});
 		x.domain(d3.extent(data, function(d) { return d.x; }));
 		y.domain(d3.extent(data, function(d) { return d.y; }));
+
+		// Add the valueline path.
+		svg.append("path")
+				.attr("class", "line")
+				.attr("d", valueline(data));
+
+				// draw the scatterplot
+				// Add the scatterplot
+				svg.selectAll("dot")
+						.data(data)
+				.enter().append("circle")
+						.attr("r", 5)
+						.attr("cx", function(d) { return x(d.x); })
+						.attr("cy", function(d) { return y(d.y); })
+						.on("mouseover", function(d) {
+								div.transition()
+										.duration(50)
+										.style("opacity", 1)
+										.style("cursor","pointer");
+								div	.html("<strong><span style='color:black;font-weight:bolder;font-size:15px;'>Year:</strong> <span style='color:red;font-weight:bolder;font-size:15px;'>" + d.x+ "</span> <br> <strong><span style='color:black;font-weight:bolder;font-size:15px;'> Values(US$):</strong> <span style='color:red;font-weight:bolder;font-size:15px;'>" + d.y + "</span>")
+										.style("left", (d3.event.pageX) + "px")
+										.style("top", (d3.event.pageY - 28) + "px");
+								})
+						.on("mouseout", function(d) {
+								div.transition()
+										.duration(2000)
+										.style("opacity", 0);
+						});
 
 		svg.append("g")
 				.attr("class", "x axis")
@@ -56,16 +91,13 @@ function lineChart (el,json_file){
 				.style("text-anchor", "end")
 				.text("GDP growth (annual %)");
 
-		svg.append("path")
-				.datum(data)
-				.attr("class", "line")
-				.attr("d", line);
+
 	});
 };
 
 //js for stack bar chart
 
-function stackBar(el,json_file){
+function stackBar(el,json_file,subObject){
 		var margin = {top: 32, right: 20, bottom:200, left: 40},
 		    width = 900 - margin.left - margin.right,
 		    height = 600 - margin.top - margin.bottom;
@@ -95,6 +127,7 @@ function stackBar(el,json_file){
 		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 		d3.json(json_file, function(error, data) {
+			data=data[subObject];
 		  if (error) throw error;
 
 		  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "Country"; }));
@@ -116,7 +149,7 @@ function stackBar(el,json_file){
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return "<strong>Values(US$):</strong> <span style='color:red'>" + d.y1 + "</span>";
+							return "</span> <br> <strong><span style='color:black;font-weight:bolder;font-size:15px;'> Values(US$):</strong> <span style='color:red;font-weight:bolder;font-size:15px;'>" + d.y1 + "</span>";
 						});
 
 			svg.append("g")
@@ -182,7 +215,7 @@ function stackBar(el,json_file){
 	};
 
 //js for multiline chart
-function multiLine(el,json_file){
+function multiLine(el,json_file,subObject){
 		var margin = {top: 50, right: 20, bottom: 30, left: 40},
     width = 900 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
@@ -218,6 +251,7 @@ function multiLine(el,json_file){
 		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 		d3.json(json_file, function(error, data) {
+			data=data[subObject];
 		  if (error) throw error;
 
 		  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "year"; }));

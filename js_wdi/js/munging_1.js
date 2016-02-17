@@ -1,3 +1,4 @@
+(function(){
 var fs  = require("fs");
 var headers= [];
 var result = [];
@@ -12,6 +13,7 @@ var indiaGDP=[];
 var continent=[];
 var continentWiseDataList=[];
 var ContinentAggregate = {};
+
 
 //reading continent wise country code csv file and creating an array map
 fs.readFile('inputFile/countryCode.csv',"utf-8",function(err,data){
@@ -56,10 +58,15 @@ lineReader.on('close', function () {
   dataSort(gdp,gni,result1);
   dataSort(gdpPC,gniPC,result2);
   postprocessingContinentAggdata();
-  dataToJson('outputfile/gdpVsGni.json',JSON.stringify(result1));
-  dataToJson('outputfile/gdpPerCapitaVsGniPercapita.json',JSON.stringify(result2));
-  dataToJson('outputfile/indiaGDP.json',JSON.stringify(indiaGDP));
-  dataToJson('outputfile/aggregatedGDP.json',JSON.stringify(continentWiseDataList));
+
+  //murging all object into one to create one json for graph rendering
+  var wdiObj = {};
+  wdiObj["gdpVsGni"]=result1;
+  wdiObj["gdpPerCapitaVsGniPercapita"]=result2;
+  wdiObj["indiaGDP"]=indiaGDP;
+  wdiObj["aggrContinent"]=continentWiseDataList;
+
+  dataToJson('outputfile/wdiData.json',JSON.stringify(wdiObj));
  });
 
 function dataMunging(line){
@@ -67,15 +74,23 @@ function dataMunging(line){
   var  dataLength=currentline.length;
 
 //code to filter for first requirement
-  if(currentline[3]==="NY.GDP.MKTP.KD" && currentline[49]!=="")
+  if(currentline[3]==="NY.GDP.MKTP.KD")
     {
+      if(currentline[49]==="")
+       {
+         currentline[49]===0;
+       }
       var obj ={};
       obj["country"]=currentline[0];
       obj["gdp2005"]=parseFloat(currentline[49]);
       gdp.push(obj);
     }
-  else if(currentline[3]==="NY.GNP.MKTP.KD" && currentline[49]!=="")
+  else if(currentline[3]==="NY.GNP.MKTP.KD")
     {
+      if(currentline[49]==="")
+       {
+         currentline[49]===0;
+       }
       for(var i =0 ;i<gdp.length;i++){
         if(typeof gdp[i]!=='undefined')
         {
@@ -95,13 +110,15 @@ function dataMunging(line){
 //code to filter for second requirement
   else if(currentline[3]==="NY.GDP.PCAP.KD")
     {
-     if(currentline[49]!=="")
-      {
-        var obj ={};
-        obj["country"]=currentline[0];
-        obj["gdp2005"]=parseFloat(currentline[49]);
-        gdpPC.push(obj);
-      }
+      if(currentline[49]==="")
+       {
+         currentline[49]===0;
+       }
+      var obj ={};
+      obj["country"]=currentline[0];
+      obj["gdp2005"]=parseFloat(currentline[49]);
+      gdpPC.push(obj);
+
 
       //code to calculate aggregated data for continents
 
@@ -111,8 +128,12 @@ function dataMunging(line){
       }
     }
 
-  else if(currentline[3]==="NY.GNP.PCAP.KD" && currentline[49]!=="")
+  else if(currentline[3]==="NY.GNP.PCAP.KD")
     {
+        if(currentline[49]==="")
+         {
+           currentline[49]===0;
+         }
         for(var i =0 ;i<gdpPC.length;i++){
           if(typeof gdp[i]!=='undefined')
           {
@@ -152,8 +173,8 @@ function dataMunging(line){
      }
    }
  }
- function createfinalMap(headingArray){
 
+ function createfinalMap(headingArray){
    for (var i = 4; i < headingArray.length; i++) {
      var obj ={};
      obj["year"]=headingArray[i];
@@ -166,8 +187,8 @@ function dataMunging(line){
 
      ContinentAggregate[headingArray[i]]=obj;
    }
-
  }
+
 function postprocessingContinentAggdata(){
   continentWiseDataList;
   var MapKeys = Object.keys(ContinentAggregate);
@@ -193,7 +214,7 @@ function dataSort(gdpValue,gniValue,finalResult){
       }
      }
     }
-}
+ }
 
 //code for creating json file
 var dataToJson = function(file_name,file_data){
@@ -206,3 +227,4 @@ var dataToJson = function(file_name,file_data){
      console.log(file_name + ' file saved successfully.');
      });
   }
+}());
